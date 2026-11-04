@@ -19,11 +19,11 @@ it wails until you disarm it with Touch ID or your password — **even with the 
 
 ## Install
 
-1. Download **UnplugAlarm.zip** from the [latest release](https://github.com/joanseg/unplug-alarm/releases/latest).
-2. Unzip it and drag **Unplug Alarm** into your **Applications** folder — do this *before* the first run, because the
-   helper is tied to where the app lives.
-3. Open it from Applications. macOS asks *"Unplug Alarm is an app downloaded from the internet. Are you sure you want to
-   open it?"* — click **Open**. The app is signed with Developer ID and notarized by Apple.
+1. Download **UnplugAlarm.dmg** from the [latest release](https://github.com/joanseg/unplug-alarm/releases/latest).
+2. Open it. In the window that appears, drag **Unplug Alarm** onto the **Applications** folder — do this *before* the
+   first run, because the helper is tied to where the app lives. Then eject the disk image.
+3. Open Unplug Alarm from Applications. macOS asks *"Unplug Alarm is an app downloaded from the internet. Are you sure
+   you want to open it?"* — click **Open**. The app is signed with Developer ID and notarized by Apple.
 4. A padlock appears in the menu bar. That's the app; it has no window and no Dock icon.
 
 Then follow **First run: approve the helper** below.
@@ -86,7 +86,7 @@ Quit the app, switch it off in **Login Items & Extensions**, and delete it. To c
 ## Releasing
 
 `scripts/release.sh <version>` (e.g. `scripts/release.sh 0.2.0`) sets the version, commits and pushes it, then
-builds, notarizes, staples and publishes `UnplugAlarm.zip` as GitHub release `v<version>`. It reads `SIGN_IDENTITY`
+builds, notarizes, staples and publishes `UnplugAlarm.dmg` as GitHub release `v<version>`. It reads `SIGN_IDENTITY`
 (a Developer ID Application identity), `ASC_KEY_ID` and `ASC_ISSUER_ID` from a git-ignored `release.env` at the repo root.
 
 ## Project layout
@@ -95,8 +95,10 @@ builds, notarizes, staples and publishes `UnplugAlarm.zip` as GitHub release `v<
 Sources/UnplugAlarm/        menu-bar app: power monitor, siren, arm/disarm, helper client
 Sources/UnplugAlarmHelper/  privileged helper: runs pmset, restores sleep when the app goes away
 Sources/Shared/             XPC protocol shared by both
-Resources/                  Info.plist and the helper's launchd plist
+Resources/                  Info.plist, the helper's launchd plist, app icon, disk image background
 scripts/build-app.sh        builds and signs build/UnplugAlarm.app
+scripts/make-dmg.sh         packs the app into a drag-to-Applications disk image
+scripts/make-art.swift      regenerates the app icon and the disk image background
 scripts/release.sh          notarizes and publishes a GitHub release
 ```
 

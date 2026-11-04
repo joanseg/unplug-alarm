@@ -26,10 +26,13 @@ When asked to "release a new version":
 2. Run `scripts/release.sh <version>` with the next version (current one: `Resources/Info.plist`
    `CFBundleShortVersionString`; `gh release list` shows what's published). It bumps and pushes the version,
    builds with the Developer ID identity, notarizes with the App Store Connect key, staples, and creates GitHub
-   release `v<version>` with `UnplugAlarm.zip`. Notarization takes a few minutes.
-3. Confirm: `curl -sIL https://github.com/joanseg/unplug-alarm/releases/latest/download/UnplugAlarm.zip` returns 200.
+   release `v<version>` with `UnplugAlarm.dmg` (app and DMG are each notarized). Takes a few minutes.
+3. Confirm: `curl -sIL https://github.com/joanseg/unplug-alarm/releases/latest/download/UnplugAlarm.dmg` returns 200.
 
 ## Gotchas
+
+- `scripts/make-dmg.sh` lays out the DMG window by scripting Finder (needs Automation permission for Finder). Eject any
+  mounted "Unplug Alarm" volume first, or Finder targets the wrong disk. Art comes from `swift scripts/make-art.swift`.
 
 - **The helper is tied to the app's path.** Moving the app, or switching its signature (development ↔ Developer ID),
   can require re-approving it in System Settings → Login Items. Symptom: menu says "Lid closed: not protected".
