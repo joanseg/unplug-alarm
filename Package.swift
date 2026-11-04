@@ -5,6 +5,8 @@ let package = Package(
     name: "UnplugAlarm",
     platforms: [.macOS(.v15)],
     targets: [
-        .executableTarget(name: "UnplugAlarm")
+        .target(name: "Shared"),
+        .executableTarget(name: "UnplugAlarm", dependencies: ["Shared"]),
+        .executableTarget(name: "UnplugAlarmHelper", dependencies: ["Shared"]),
     ]
 )

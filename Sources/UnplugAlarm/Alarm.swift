@@ -1,11 +1,10 @@
 import AppKit
 import AVFoundation
 
-/// A looping siren played at unmuted system volume — 100, or `ALARM_VOLUME` when set for testing.
+/// A looping siren played at unmuted system volume.
 @MainActor
 final class Alarm {
     private let engine = AVAudioEngine()
-    private let volume = Int(ProcessInfo.processInfo.environment["ALARM_VOLUME"] ?? "") ?? 100
 
     init() {
         let sampleRate = engine.outputNode.inputFormat(forBus: 0).sampleRate
@@ -14,12 +13,13 @@ final class Alarm {
         engine.connect(node, to: engine.mainMixerNode, format: node.outputFormat(forBus: 0))
     }
 
-    func start() {
+    /// Sets the system volume (0–100), unmutes, and starts the siren.
+    func start(volume: Int) {
         var error: NSDictionary?
         NSAppleScript(source: "set volume output volume \(volume) without output muted")?.executeAndReturnError(&error)
         do {
             try engine.start()
-            log.info("alarm start: volume=\(self.volume) scriptError=\(String(describing: error))")
+            log.info("alarm start: volume=\(volume) scriptError=\(String(describing: error))")
         } catch {
             log.error("alarm start failed: \(error)")
         }

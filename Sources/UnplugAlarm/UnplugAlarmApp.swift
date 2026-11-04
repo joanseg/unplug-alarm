@@ -26,15 +26,26 @@ struct MenuContent: View {
 
     var body: some View {
         Text(controller.isOnAC ? "Plugged in" : "On battery")
+        if controller.isArmed {
+            if controller.isLidProtected {
+                Text("Lid closed: protected")
+            } else {
+                Button("Lid closed: not protected — approve helper…") { controller.sleepGuard.openLoginItems() }
+            }
+        }
         Divider()
         if controller.isArmed {
             Button(controller.isRinging ? "Silence and Disarm…" : "Disarm…") {
                 Task { await controller.disarm() }
             }
         } else {
-            Button("Arm") { controller.arm() }
+            Button("Arm") { Task { await controller.arm() } }
                 .disabled(!controller.isOnAC)
         }
+        Picker("Alarm Volume", selection: Bindable(controller).volume) {
+            ForEach([10, 25, 50, 75, 100], id: \.self) { Text("\($0)%").tag($0) }
+        }
+        .disabled(controller.isArmed)
         Divider()
         Button("Quit") { NSApplication.shared.terminate(nil) }
             .disabled(controller.isArmed)

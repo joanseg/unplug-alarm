@@ -11,8 +11,15 @@ final class AlarmController {
     private(set) var isArmed = false
     private(set) var isRinging = false
     private(set) var isOnAC = PowerMonitor.isOnAC
+    /// Whether sleep is disabled, so the alarm also works with the lid closed.
+    private(set) var isLidProtected = false
+    /// Alarm volume, 0–100, remembered across launches.
+    var volume = UserDefaults.standard.object(forKey: "volume") as? Int ?? 100 {
+        didSet { UserDefaults.standard.set(volume, forKey: "volume") }
+    }
 
     @ObservationIgnored private let alarm = Alarm()
+    @ObservationIgnored let sleepGuard = SleepGuard()
     @ObservationIgnored private var monitor: PowerMonitor?
 
     init() {
@@ -20,9 +27,10 @@ final class AlarmController {
         monitor?.start()
     }
 
-    func arm() {
+    func arm() async {
         isArmed = true
-        log.info("armed")
+        isLidProtected = await sleepGuard.disableSleep()
+        log.info("armed lidProtected=\(self.isLidProtected)")
     }
 
     /// Asks for Touch ID or the Mac password, then silences and disarms.
@@ -30,8 +38,10 @@ final class AlarmController {
         let context = LAContext()
         guard (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "disarm the unplug alarm")) == true else { return }
         alarm.stop()
+        await sleepGuard.enableSleep()
         isRinging = false
         isArmed = false
+        isLidProtected = false
     }
 
     private func powerChanged(onAC: Bool) {
@@ -39,7 +49,7 @@ final class AlarmController {
         isOnAC = onAC
         if isArmed && !onAC && !isRinging {
             isRinging = true
-            alarm.start()
+            alarm.start(volume: volume)
         }
     }
 }
