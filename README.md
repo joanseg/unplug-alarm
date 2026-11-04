@@ -34,6 +34,13 @@ command, `/usr/bin/pmset disablesleep 1` or `0`, and nothing else:
 - You can switch it off at any time in **System Settings → General → Login Items & Extensions**, and the menu's
   **Uninstall Unplug Alarm…** removes it completely.
 
+**Check the download.** Each release page lists the DMG's SHA-256 checksum — a fingerprint of the file. If even one
+byte were changed, the fingerprint would be completely different. Compare it with yours:
+
+```sh
+shasum -a 256 ~/Downloads/UnplugAlarm.dmg
+```
+
 **Check it yourself** after installing:
 
 ```sh
@@ -43,7 +50,6 @@ spctl --assess --verbose "/Applications/Unplug Alarm.app"
 
 # Who signed it
 codesign -dvv "/Applications/Unplug Alarm.app" 2>&1 | grep -E "Authority|TeamIdentifier"
-# → Developer ID Application: SPRINTLAB TECHNOLOGIES LTD (35XAX3CSKK)
 
 # Sleep is only disabled while armed
 pmset -g | grep SleepDisabled

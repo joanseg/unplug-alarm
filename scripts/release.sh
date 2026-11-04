@@ -33,4 +33,7 @@ scripts/make-dmg.sh
 notarize "$DMG"
 xcrun stapler staple "$DMG"
 spctl --assess --type open --context context:primary-signature --verbose "$DMG"
-gh release create "v$VERSION" "$DMG" --title "Unplug Alarm $VERSION" --notes "Download UnplugAlarm.dmg, open it and drag Unplug Alarm into Applications. See the README for first-run steps."
+SHA=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
+gh release create "v$VERSION" "$DMG" --title "Unplug Alarm $VERSION" --notes "Download UnplugAlarm.dmg, open it and drag Unplug Alarm into Applications. See the README for first-run steps.
+
+SHA-256 of UnplugAlarm.dmg: \`$SHA\`"
