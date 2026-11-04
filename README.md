@@ -19,16 +19,20 @@ it wails until you disarm it with Touch ID or your password — **even with the 
 
 ## Install
 
-### From a release
+1. Download **UnplugAlarm.zip** from the [latest release](https://github.com/joanseg/unplug-alarm/releases/latest).
+2. Unzip it and drag **Unplug Alarm** into your **Applications** folder — do this *before* the first run, because the
+   helper is tied to where the app lives.
+3. Open it from Applications. macOS asks *"Unplug Alarm is an app downloaded from the internet. Are you sure you want to
+   open it?"* — click **Open**. The app is signed with Developer ID and notarized by Apple.
+4. A padlock appears in the menu bar. That's the app; it has no window and no Dock icon.
 
-> Signed and notarized releases are not published yet. Until then, build it from source (below).
+Then follow **First run: approve the helper** below.
 
-When they are: download `UnplugAlarm.zip` from [Releases](https://github.com/joanseg/unplug-alarm/releases),
-unzip it, and drag **Unplug Alarm** into `/Applications`.
+**Updating:** quit the app, replace it in Applications with the new version, and open it again.
 
 ### From source
 
-You need Xcode (Swift 6.2+) and an Apple signing certificate.
+For developers. You need Xcode (Swift 6.2+) and an Apple signing certificate.
 
 ```sh
 git clone https://github.com/joanseg/unplug-alarm.git
@@ -102,6 +106,12 @@ the lid open the alarm rings the moment the cable is pulled; with the lid closed
 Quit the app, switch it off in **Login Items & Extensions**, and delete it. To check sleep is back on, run
 `pmset -g | grep SleepDisabled` — it should say `0`. If it says `1`, run `sudo pmset disablesleep 0`.
 
+## Releasing
+
+`scripts/release.sh` builds, notarizes, staples and publishes `UnplugAlarm.zip` as a GitHub release for the version in
+`Resources/Info.plist`. It needs `SIGN_IDENTITY` (a Developer ID Application identity), `ASC_KEY_ID` and
+`ASC_ISSUER_ID` (an App Store Connect API key in `~/.appstoreconnect/private_keys/`). Bump the version first.
+
 ## Project layout
 
 ```
@@ -110,4 +120,5 @@ Sources/UnplugAlarmHelper/  privileged helper: runs pmset, restores sleep when t
 Sources/Shared/             XPC protocol shared by both
 Resources/                  Info.plist and the helper's launchd plist
 scripts/build-app.sh        builds and signs build/UnplugAlarm.app
+scripts/release.sh          notarizes and publishes a GitHub release
 ```
