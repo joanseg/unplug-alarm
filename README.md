@@ -12,6 +12,43 @@ it wails until you disarm it with Touch ID or your password — **even with the 
 - **Works with the lid closed.** On battery, macOS normally sleeps the instant the lid is shut. While armed, a small helper
   switches system sleep off (`pmset disablesleep 1`) and switches it back on when you disarm or quit, or if the app crashes.
 
+## Is it safe?
+
+Unplug Alarm asks for system-level access, so here is exactly what it does and how you can check it yourself.
+
+- **Signed and notarized.** Every release is signed with an Apple Developer ID and notarized by Apple, which scans it
+  for malicious code before macOS will open it.
+- **Open source and small.** About 400 lines of Swift — you can read all of it in a few minutes.
+- **No internet access.** The app never connects to the network: no analytics, no tracking, no accounts, no updates
+  phoning home. Nothing about you or your Mac leaves it.
+- **No sensitive permissions.** It doesn't ask for your camera, microphone, location, contacts, files, screen or
+  Accessibility. Touch ID is handled by macOS; the app only learns "approved" or "not approved".
+
+**What the helper does — and only that.** The part that runs with administrator rights is
+[`Sources/UnplugAlarmHelper/main.swift`](Sources/UnplugAlarmHelper/main.swift), 40 lines long. It runs a single
+command, `/usr/bin/pmset disablesleep 1` or `0`, and nothing else:
+
+- It only accepts requests from the genuine, signed Unplug Alarm app. Any other program is refused.
+- It switches sleep back on whenever the app disarms, quits or crashes, and every time the helper starts — so your Mac
+  can't get stuck awake.
+- You can switch it off at any time in **System Settings → General → Login Items & Extensions**, and the menu's
+  **Uninstall Unplug Alarm…** removes it completely.
+
+**Check it yourself** after installing:
+
+```sh
+# Signed by a Developer ID and notarized by Apple
+spctl --assess --verbose "/Applications/Unplug Alarm.app"
+# → accepted, source=Notarized Developer ID
+
+# Who signed it
+codesign -dvv "/Applications/Unplug Alarm.app" 2>&1 | grep -E "Authority|TeamIdentifier"
+# → Developer ID Application: SPRINTLAB TECHNOLOGIES LTD (35XAX3CSKK)
+
+# Sleep is only disabled while armed
+pmset -g | grep SleepDisabled
+```
+
 ## Requirements
 
 - macOS 15 (Sequoia) or later
