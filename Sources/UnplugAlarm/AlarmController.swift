@@ -31,7 +31,7 @@ final class AlarmController {
         isArmed = true
         let protected = await sleepGuard.disableSleep()
         guard isArmed else {
-            await sleepGuard.enableSleep()
+            sleepGuard.enableSleep()
             return
         }
         isLidProtected = protected
@@ -43,7 +43,7 @@ final class AlarmController {
         let context = LAContext()
         guard (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "disarm the unplug alarm")) == true else { return }
         alarm.stop()
-        await sleepGuard.enableSleep()
+        sleepGuard.enableSleep()
         isRinging = false
         isArmed = false
         isLidProtected = false

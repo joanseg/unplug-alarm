@@ -27,15 +27,15 @@ final class SleepGuard {
         connection.remoteObjectInterface = NSXPCInterface(with: SleepControl.self)
         connection.resume()
         self.connection = connection
-        return await setSleepDisabled(true, on: connection)
+        let ok = await setSleepDisabled(true, on: connection)
+        if !ok { enableSleep() }
+        return ok
     }
 
-    /// Re-enables sleep and closes the helper connection.
-    func enableSleep() async {
-        guard let connection else { return }
-        _ = await setSleepDisabled(false, on: connection)
-        connection.invalidate()
-        self.connection = nil
+    /// Closes the helper connection; the helper re-enables sleep when it sees the connection go.
+    func enableSleep() {
+        connection?.invalidate()
+        connection = nil
     }
 
     func openLoginItems() {
@@ -67,15 +67,41 @@ final class SleepGuard {
         return false
     }
 
+    /// Asks the helper to change the sleep setting; gives up after 5 seconds if it doesn't answer.
     private func setSleepDisabled(_ disabled: Bool, on connection: NSXPCConnection) async -> Bool {
         let ok = await withCheckedContinuation { continuation in
+            let reply = ReplyOnce(continuation)
             let proxy = connection.remoteObjectProxyWithErrorHandler { error in
                 log.error("helper call failed: \(error)")
-                continuation.resume(returning: false)
+                reply.send(false)
             } as! SleepControl
-            proxy.setSleepDisabled(disabled) { continuation.resume(returning: $0) }
+            proxy.setSleepDisabled(disabled) { reply.send($0) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                if reply.send(false) { log.error("helper call timed out") }
+            }
         }
         log.info("sleep disabled=\(disabled) ok=\(ok)")
         return ok
+    }
+}
+
+/// Resumes a continuation exactly once, whichever of reply, error or timeout comes first.
+private final class ReplyOnce: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<Bool, Never>?
+
+    init(_ continuation: CheckedContinuation<Bool, Never>) {
+        self.continuation = continuation
+    }
+
+    /// Returns whether this call was the one that resumed it.
+    @discardableResult
+    func send(_ value: Bool) -> Bool {
+        lock.lock()
+        let pending = continuation
+        continuation = nil
+        lock.unlock()
+        pending?.resume(returning: value)
+        return pending != nil
     }
 }
