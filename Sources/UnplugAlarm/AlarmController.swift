@@ -29,7 +29,12 @@ final class AlarmController {
 
     func arm() async {
         isArmed = true
-        isLidProtected = await sleepGuard.disableSleep()
+        let protected = await sleepGuard.disableSleep()
+        guard isArmed else {
+            await sleepGuard.enableSleep()
+            return
+        }
+        isLidProtected = protected
         log.info("armed lidProtected=\(self.isLidProtected)")
     }
 

@@ -44,16 +44,34 @@ func drawIcon() {
     drawCentered(symbol("bell.and.waves.left.and.right.fill", pointSize: 400, color: .white), at: NSPoint(x: 512, y: 512))
 }
 
+/// DMG window content size in points; scripts/make-dmg.sh places the icons on this grid.
+let backgroundSize = NSSize(width: 540, height: 300)
+/// Vertical centre of the two icons, measured from the top (Finder's coordinates).
+let iconCentreFromTop: CGFloat = 125
+
 /// The DMG window background: app on the left, Applications on the right, an arrow and a caption between.
 func drawBackground() {
-    NSGradient(starting: NSColor(white: 0.97, alpha: 1), ending: NSColor(white: 0.90, alpha: 1))!
-        .draw(in: NSRect(x: 0, y: 0, width: 540, height: 340), angle: -90)
-    drawCentered(symbol("arrow.right", pointSize: 44, color: NSColor(white: 0.55, alpha: 1)), at: NSPoint(x: 270, y: 180))
-    let caption = NSAttributedString(string: "Drag Unplug Alarm to Applications to install", attributes: [
-        .font: NSFont.systemFont(ofSize: 14, weight: .medium),
-        .foregroundColor: NSColor(white: 0.35, alpha: 1),
+    let bounds = NSRect(origin: .zero, size: backgroundSize)
+    NSGradient(starting: NSColor(white: 0.98, alpha: 1), ending: NSColor(white: 0.93, alpha: 1))!.draw(in: bounds, angle: -90)
+
+    let y = backgroundSize.height - iconCentreFromTop
+    let arrow = NSBezierPath()
+    arrow.move(to: NSPoint(x: 222, y: y))
+    arrow.line(to: NSPoint(x: 318, y: y))
+    arrow.move(to: NSPoint(x: 304, y: y + 12))
+    arrow.line(to: NSPoint(x: 318, y: y))
+    arrow.line(to: NSPoint(x: 304, y: y - 12))
+    arrow.lineWidth = 4
+    arrow.lineCapStyle = .round
+    arrow.lineJoinStyle = .round
+    NSColor(white: 0.62, alpha: 1).setStroke()
+    arrow.stroke()
+
+    let caption = NSAttributedString(string: "Drag Unplug Alarm into Applications to install", attributes: [
+        .font: NSFont.systemFont(ofSize: 13, weight: .regular),
+        .foregroundColor: NSColor(white: 0.45, alpha: 1),
     ])
-    caption.draw(at: NSPoint(x: 270 - caption.size().width / 2, y: 48))
+    caption.draw(at: NSPoint(x: (backgroundSize.width - caption.size().width) / 2, y: 38))
 }
 
 let resources = URL(fileURLWithPath: "Resources")
@@ -69,8 +87,8 @@ for size in [16, 32, 128, 256, 512] {
     }
 }
 let background1x = tmp.appendingPathComponent("bg.png"), background2x = tmp.appendingPathComponent("bg@2x.png")
-try png(width: 540, height: 340, scale: 1, drawBackground).write(to: background1x)
-try png(width: 540, height: 340, scale: 2, drawBackground).write(to: background2x)
+try png(width: backgroundSize.width, height: backgroundSize.height, scale: 1, drawBackground).write(to: background1x)
+try png(width: backgroundSize.width, height: backgroundSize.height, scale: 2, drawBackground).write(to: background2x)
 
 func run(_ tool: String, _ arguments: [String]) throws {
     let process = try Process.run(URL(fileURLWithPath: tool), arguments: arguments)
