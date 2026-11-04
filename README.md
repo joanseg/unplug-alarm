@@ -102,4 +102,4 @@ scripts/release.sh          notarizes and publishes a GitHub release
 
 ## License
 
-[MIT](LICENSE) © 2026 Joan Senent Gabriel
+[MIT](LICENSE) © 2026 Joan S.
