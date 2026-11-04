@@ -71,29 +71,6 @@ You only do this once. No Terminal, no `sudo`.
 
 **Arm** is greyed out on battery — plug in first. **Quit** is greyed out while armed.
 
-## Using it with Amphetamine
-
-[Amphetamine](https://apps.apple.com/us/app/amphetamine/id937984704?mt=12) is a free Mac App Store app that keeps your Mac
-awake. The two apps work side by side, but they do different jobs:
-
-- **Amphetamine** stops *idle* sleep and keeps the display on — useful while you work, present or download.
-- **Unplug Alarm** stops *all* sleep, but only while armed — which is what lets the siren ring with the lid shut on battery.
-
-We tested Amphetamine's closed-display mode on its own: with the lid closed, pulling the charger still put the Mac to
-sleep instantly (macOS logs it as *Clamshell Sleep*), so the siren only went off once the lid was reopened. Amphetamine
-is a sandboxed App Store app and can't switch system sleep off the way the helper does.
-
-**If you use both:**
-
-1. Keep using Amphetamine as usual for day-to-day keep-awake sessions.
-2. When you step away, **Arm** Unplug Alarm and check it says **Lid closed: protected**. You don't need an Amphetamine
-   session for the alarm.
-3. Disarm when you're back. Unplug Alarm hands sleep back to macOS. Amphetamine's sessions are untouched, because it
-   uses a different mechanism (power assertions, not `disablesleep`).
-
-**If you decline the helper,** Amphetamine is the fallback: start a session with closed-display mode while armed. With
-the lid open the alarm rings the moment the cable is pulled; with the lid closed it rings only once the lid is opened.
-
 ## Good to know
 
 - **While armed, your Mac will not sleep** — not even in a bag. Disarm before packing it away.
@@ -108,9 +85,9 @@ Quit the app, switch it off in **Login Items & Extensions**, and delete it. To c
 
 ## Releasing
 
-`scripts/release.sh` builds, notarizes, staples and publishes `UnplugAlarm.zip` as a GitHub release for the version in
-`Resources/Info.plist`. It needs `SIGN_IDENTITY` (a Developer ID Application identity), `ASC_KEY_ID` and
-`ASC_ISSUER_ID` (an App Store Connect API key in `~/.appstoreconnect/private_keys/`). Bump the version first.
+`scripts/release.sh <version>` (e.g. `scripts/release.sh 0.2.0`) sets the version, commits and pushes it, then
+builds, notarizes, staples and publishes `UnplugAlarm.zip` as GitHub release `v<version>`. It reads `SIGN_IDENTITY`
+(a Developer ID Application identity), `ASC_KEY_ID` and `ASC_ISSUER_ID` from a git-ignored `release.env` at the repo root.
 
 ## Project layout
 
