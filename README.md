@@ -80,8 +80,18 @@ You only do this once. No Terminal, no `sudo`.
 
 ## Uninstall
 
-Quit the app, switch it off in **Login Items & Extensions**, and delete it. To check sleep is back on, run
-`pmset -g | grep SleepDisabled` — it should say `0`. If it says `1`, run `sudo pmset disablesleep 0`.
+Disarm, then choose **Uninstall Unplug Alarm…** from the menu. It removes the background helper and settings and moves
+the app to the Bin. Please use this rather than dragging the app to the Bin yourself: deleting it by hand leaves the
+helper registered, and a later reinstall then can't start it.
+
+To check sleep is back on, run `pmset -g | grep SleepDisabled` — it should say `0`. If it says `1`, run
+`sudo pmset disablesleep 0`.
+
+## Troubleshooting
+
+**"Unplug Alarm's helper isn't responding"**, or the menu keeps saying *Lid closed: not protected*: open
+**System Settings → General → Login Items & Extensions**, switch **Unplug Alarm** off, then on again. Then **Disarm…**
+and **Arm**. This re-registers the helper; it's needed after the app was deleted by hand and reinstalled.
 
 ## Releasing
 

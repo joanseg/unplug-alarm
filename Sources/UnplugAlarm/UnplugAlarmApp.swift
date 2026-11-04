@@ -47,6 +47,8 @@ struct MenuContent: View {
         }
         .disabled(controller.isArmed)
         Divider()
+        Button("Uninstall Unplug Alarm…") { Task { await Uninstaller.run(sleepGuard: controller.sleepGuard) } }
+            .disabled(controller.isArmed)
         Button("Quit") { NSApplication.shared.terminate(nil) }
             .disabled(controller.isArmed)
     }

@@ -28,8 +28,16 @@ final class SleepGuard {
         connection.resume()
         self.connection = connection
         let ok = await setSleepDisabled(true, on: connection)
-        if !ok { enableSleep() }
+        if !ok {
+            enableSleep()
+            explainUnresponsiveHelper()
+        }
         return ok
+    }
+
+    /// Removes the helper's registration, so nothing is left behind when the app is deleted.
+    func unregister() async {
+        do { try await service.unregister() } catch { log.error("helper unregister failed: \(error)") }
     }
 
     /// Closes the helper connection; the helper re-enables sleep when it sees the connection go.
@@ -56,6 +64,23 @@ final class SleepGuard {
         alert.addButton(withTitle: "Not Now")
         NSApp.activate()
         return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    /// A stale registration (e.g. after the app was deleted and reinstalled) leaves the helper unable to start;
+    /// switching it off and on in Login Items re-registers it.
+    private func explainUnresponsiveHelper() {
+        let alert = NSAlert()
+        alert.messageText = "Unplug Alarm's helper isn't responding"
+        alert.informativeText = """
+            This can happen after the app was moved or reinstalled. The alarm still works with the lid open.
+
+            In the window that opens, find Unplug Alarm under App Background Activity, switch it off, then on \
+            again. Then choose Disarm… and Arm.
+            """
+        alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Not Now")
+        NSApp.activate()
+        if alert.runModal() == .alertFirstButtonReturn { openLoginItems() }
     }
 
     /// Polls for up to three minutes while the user switches the helper on.

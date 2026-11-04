@@ -33,6 +33,10 @@ When asked to "release a new version":
 
 - `scripts/make-dmg.sh` lays out the DMG window by scripting Finder (needs Automation permission for Finder). Eject any
   mounted "Unplug Alarm" volume first, or Finder targets the wrong disk. Art comes from `swift scripts/make-art.swift`.
+- **Deleting the app by hand leaves a stale helper job**: launchd loops on "Could not find and/or execute program
+  specified by service" every 10 s and XPC calls never answer (hence the 5 s timeout in `SleepGuard`). Proven fix:
+  Login Items → switch Unplug Alarm off and on. The menu's Uninstall item unregisters properly. Use `/usr/bin/log`,
+  not `log` — zsh has a `log` builtin that silently shadows it.
 - **The helper is tied to the app's path.** Moving the app, or switching its signature (development ↔ Developer ID),
   can require re-approving it in System Settings → Login Items. Symptom: menu says "Lid closed: not protected".
 - The helper accepts only clients signed by team `35XAX3CSKK` with bundle ID `xyz.pesso.unplugalarm`
