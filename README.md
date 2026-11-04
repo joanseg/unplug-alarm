@@ -12,6 +12,40 @@ it wails until you disarm it with Touch ID or your password — **even with the 
 - **Works with the lid closed.** On battery, macOS normally sleeps the instant the lid is shut. While armed, a small helper
   switches system sleep off (`pmset disablesleep 1`) and switches it back on when you disarm or quit, or if the app crashes.
 
+## Requirements
+
+- macOS 15 (Sequoia) or later
+- A MacBook (it needs a battery to notice the charger going away)
+
+## Install
+
+1. Download **UnplugAlarm.dmg** from the [latest release](https://github.com/joanseg/unplug-alarm/releases/latest).
+2. Open it. In the window that appears, drag **Unplug Alarm** onto the **Applications** folder — do this *before* the
+   first run, because the helper is tied to where the app lives. Then eject the disk image.
+3. Open Unplug Alarm from Applications. macOS asks *"Unplug Alarm is an app downloaded from the internet. Are you sure
+   you want to open it?"* — click **Open**. The app is signed with Developer ID and notarized by Apple.
+4. A padlock appears in the menu bar. That's the app; it has no window and no Dock icon.
+
+Then follow **First run: approve the helper** below.
+
+**Updating:** quit the app, replace it in Applications with the new version, and open it again.
+
+### From source
+
+For developers. You need Xcode (Swift 6.2+) and an Apple signing certificate.
+
+```sh
+git clone https://github.com/joanseg/unplug-alarm.git
+cd unplug-alarm
+SIGN_IDENTITY="Apple Development: Your Name (XXXXXXXXXX)" scripts/build-app.sh
+open build/UnplugAlarm.app
+```
+
+List your signing identities with `security find-identity -v -p codesigning`.
+
+The helper only accepts the app signed by this project's team. If you sign with your own certificate, replace the team ID
+`35XAX3CSKK` in `Sources/UnplugAlarmHelper/main.swift` with yours.
+
 ## Is it safe?
 
 Unplug Alarm asks for system-level access, so here is exactly what it does and how you can check it yourself.
@@ -54,40 +88,6 @@ codesign -dvv "/Applications/Unplug Alarm.app" 2>&1 | grep -E "Authority|TeamIde
 # Sleep is only disabled while armed
 pmset -g | grep SleepDisabled
 ```
-
-## Requirements
-
-- macOS 15 (Sequoia) or later
-- A MacBook (it needs a battery to notice the charger going away)
-
-## Install
-
-1. Download **UnplugAlarm.dmg** from the [latest release](https://github.com/joanseg/unplug-alarm/releases/latest).
-2. Open it. In the window that appears, drag **Unplug Alarm** onto the **Applications** folder — do this *before* the
-   first run, because the helper is tied to where the app lives. Then eject the disk image.
-3. Open Unplug Alarm from Applications. macOS asks *"Unplug Alarm is an app downloaded from the internet. Are you sure
-   you want to open it?"* — click **Open**. The app is signed with Developer ID and notarized by Apple.
-4. A padlock appears in the menu bar. That's the app; it has no window and no Dock icon.
-
-Then follow **First run: approve the helper** below.
-
-**Updating:** quit the app, replace it in Applications with the new version, and open it again.
-
-### From source
-
-For developers. You need Xcode (Swift 6.2+) and an Apple signing certificate.
-
-```sh
-git clone https://github.com/joanseg/unplug-alarm.git
-cd unplug-alarm
-SIGN_IDENTITY="Apple Development: Your Name (XXXXXXXXXX)" scripts/build-app.sh
-open build/UnplugAlarm.app
-```
-
-List your signing identities with `security find-identity -v -p codesigning`.
-
-The helper only accepts the app signed by this project's team. If you sign with your own certificate, replace the team ID
-`35XAX3CSKK` in `Sources/UnplugAlarmHelper/main.swift` with yours.
 
 ## First run: approve the helper
 
