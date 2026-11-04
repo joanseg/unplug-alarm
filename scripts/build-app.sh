@@ -1,9 +1,9 @@
 #!/bin/bash
-# Builds and signs build/UnplugAlarm.app. Override the signing identity with SIGN_IDENTITY.
+# Builds and signs build/UnplugAlarm.app with the identity in SIGN_IDENTITY.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-IDENTITY="${SIGN_IDENTITY:-F9539815412E3E242E23C5483201CA6C9C6B3110}"
+IDENTITY="${SIGN_IDENTITY:?Set SIGN_IDENTITY to a codesigning identity (see README)}"
 APP=build/UnplugAlarm.app
 
 swift build -c release

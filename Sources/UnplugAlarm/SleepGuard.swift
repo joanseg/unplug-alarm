@@ -16,7 +16,10 @@ final class SleepGuard {
         if service.status != .enabled {
             do { try service.register() } catch { log.error("helper register failed: \(error)") }
         }
-        guard service.status == .enabled else { return false }
+        guard service.status == .enabled else {
+            openLoginItems()
+            return false
+        }
         let connection = NSXPCConnection(machServiceName: helperMachService, options: .privileged)
         connection.remoteObjectInterface = NSXPCInterface(with: SleepControl.self)
         connection.resume()
