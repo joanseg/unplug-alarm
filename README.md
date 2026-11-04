@@ -99,3 +99,7 @@ Resources/                  Info.plist and the helper's launchd plist
 scripts/build-app.sh        builds and signs build/UnplugAlarm.app
 scripts/release.sh          notarizes and publishes a GitHub release
 ```
+
+## License
+
+[MIT](LICENSE) © 2026 Joan Senent Gabriel
