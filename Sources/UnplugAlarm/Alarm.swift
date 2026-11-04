@@ -11,8 +11,10 @@ final class Alarm {
     }
 
     func start() {
-        NSAppleScript(source: "set volume output volume \(volume) without output muted")?.executeAndReturnError(nil)
-        sound.play()
+        var error: NSDictionary?
+        NSAppleScript(source: "set volume output volume \(volume) without output muted")?.executeAndReturnError(&error)
+        let playing = sound.play()
+        log.info("alarm start: volume=\(self.volume) scriptError=\(String(describing: error)) playing=\(playing)")
     }
 
     func stop() {

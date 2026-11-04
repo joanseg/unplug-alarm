@@ -1,5 +1,8 @@
 import LocalAuthentication
 import Observation
+import os
+
+let log = Logger(subsystem: "unplug-alarm", category: "app")
 
 /// Arms the alarm and rings it when the power cable is pulled.
 @MainActor
@@ -19,6 +22,7 @@ final class AlarmController {
 
     func arm() {
         isArmed = true
+        log.info("armed")
     }
 
     /// Asks for Touch ID or the Mac password, then silences and disarms.
@@ -31,6 +35,7 @@ final class AlarmController {
     }
 
     private func powerChanged(onAC: Bool) {
+        log.info("power changed: onAC=\(onAC) armed=\(self.isArmed) ringing=\(self.isRinging)")
         isOnAC = onAC
         if isArmed && !onAC && !isRinging {
             isRinging = true
