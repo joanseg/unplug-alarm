@@ -33,7 +33,6 @@ When asked to "release a new version":
 
 - `scripts/make-dmg.sh` lays out the DMG window by scripting Finder (needs Automation permission for Finder). Eject any
   mounted "Unplug Alarm" volume first, or Finder targets the wrong disk. Art comes from `swift scripts/make-art.swift`.
-
 - **The helper is tied to the app's path.** Moving the app, or switching its signature (development ↔ Developer ID),
   can require re-approving it in System Settings → Login Items. Symptom: menu says "Lid closed: not protected".
 - The helper accepts only clients signed by team `35XAX3CSKK` with bundle ID `xyz.pesso.unplugalarm`
