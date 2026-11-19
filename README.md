@@ -118,7 +118,8 @@ You only do this once. No Terminal, no `sudo`.
 
 - **While armed, your Mac will not sleep** — not even in a bag. Disarm before packing it away.
 - **Holding the power button** to force it off stops the alarm. It protects against grab-and-go, not against everything.
-- The siren plays through whatever audio output is selected — headphones included.
+- The siren always plays through the **MacBook's built-in speakers**, even when AirPods, Bluetooth or wired
+  headphones are connected — so a thief can't silence it by pairing headphones, and you don't miss it because yours are on.
 - Logs: `log stream --level info --predicate 'subsystem == "unplug-alarm"'`.
 
 ## Uninstall
